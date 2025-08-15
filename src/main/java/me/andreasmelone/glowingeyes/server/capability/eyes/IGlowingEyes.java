@@ -14,5 +14,7 @@ public interface IGlowingEyes extends Serializable {
     HashMap<Point, Color> getGlowingEyesMap();
     void setGlowingEyesMap(@Nonnull HashMap<Point, Color> glowingEyesMap);
     boolean isToggledOn();
+    Color getBasicColor();
+    void setBasicColor(Color color);
     void setToggledOn(boolean toggledOn);
 }

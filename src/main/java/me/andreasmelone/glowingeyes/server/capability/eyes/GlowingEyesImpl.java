@@ -15,11 +15,16 @@ import java.util.UUID;
 public class GlowingEyesImpl implements IGlowingEyes {
     private boolean toggledOn = true;
     private HashMap<Point, Color> glowingEyesMap = new HashMap<>();
+    private Color basiccolor = new Color(189,6,0);
 
     @Nonnull
     @Override
     public HashMap<Point, Color> getGlowingEyesMap() {
         return this.glowingEyesMap;
+    }
+
+    public Color getBasicColor() {
+        return this.basiccolor;
     }
 
     @Override
@@ -35,5 +40,10 @@ public class GlowingEyesImpl implements IGlowingEyes {
     @Override
     public void setToggledOn(boolean toggledOn) {
         this.toggledOn = toggledOn;
+    }
+
+    @Override
+    public void setBasicColor(Color color) {
+        this.basiccolor = color;
     }
 }

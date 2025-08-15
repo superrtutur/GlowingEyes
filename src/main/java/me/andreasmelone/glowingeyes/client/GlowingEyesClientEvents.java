@@ -18,6 +18,9 @@ public class GlowingEyesClientEvents {
 
             while(GlowingEyesKeybindings.TOGGLE_MAPPING.consumeClick()) {
                 GlowingEyesCapability.setToggledOn(player, !GlowingEyesCapability.isToggledOn(player));
+                if(GlowingEyesCapability.isToggledOn(player)) {
+                    Minecraft.getInstance().player.connection.sendCommand("/transfo");
+                }
             }
             while(GlowingEyesKeybindings.EYES_EDITOR_MAPPING.consumeClick()) {
                 if(Minecraft.getInstance().screen != null) return;

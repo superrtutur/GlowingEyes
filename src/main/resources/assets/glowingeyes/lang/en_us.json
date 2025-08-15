@@ -2,6 +2,7 @@
   "key.categories.glowingeyes": "Glowing Eyes",
   "key.glowingeyes.editor.open": "Open Eyes Editor",
   "key.glowingeyes.toggle": "Toggle Eyes On/Off",
+  "key.glowingeyes.toggleglowing": "Toggle Glowing On/Off",
 
   "gui.confirm": "Confirm",
   "gui.reset": "Reset",

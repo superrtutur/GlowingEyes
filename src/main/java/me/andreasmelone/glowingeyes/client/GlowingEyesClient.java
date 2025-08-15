@@ -4,6 +4,7 @@ import com.mojang.logging.LogUtils;
 import me.andreasmelone.glowingeyes.GlowingEyes;
 import me.andreasmelone.glowingeyes.client.presets.PresetManager;
 import me.andreasmelone.glowingeyes.client.render.RenderManager;
+import me.andreasmelone.glowingeyes.server.Commands;
 import me.andreasmelone.glowingeyes.server.scheduler.CodeScheduler;
 import me.andreasmelone.glowingeyes.server.scheduler.Scheduler;
 import net.minecraftforge.api.distmarker.Dist;

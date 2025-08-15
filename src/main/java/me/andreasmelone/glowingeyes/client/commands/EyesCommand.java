@@ -1,26 +1,85 @@
 package me.andreasmelone.glowingeyes.client.commands;
 
 import com.mojang.brigadier.CommandDispatcher;
-import com.mojang.brigadier.builder.LiteralArgumentBuilder;
-import me.andreasmelone.glowingeyes.client.GlowingEyesClient;
-import me.andreasmelone.glowingeyes.client.gui.EyesEditorScreen;
-import net.minecraft.client.Minecraft;
+import com.mojang.brigadier.arguments.BoolArgumentType;
+import com.mojang.brigadier.arguments.IntegerArgumentType;
+import com.mojang.brigadier.arguments.StringArgumentType;
+import me.andreasmelone.glowingeyes.server.capability.eyes.GlowingEyesCapability;
 import net.minecraft.commands.CommandSourceStack;
 import net.minecraft.commands.Commands;
+import net.minecraft.commands.arguments.EntityArgument;
+import net.minecraft.network.chat.Component;
+import net.minecraft.server.level.ServerPlayer;
+
+import java.awt.*;
+import java.util.Collection;
+import java.util.HashMap;
+import java.util.List;
 
 public class EyesCommand {
     public static void register(CommandDispatcher<CommandSourceStack> dispatcher) {
-        LiteralArgumentBuilder<CommandSourceStack> eyes = Commands.literal("eyes");
-        eyes.executes(ctx -> {
-            Minecraft mc = Minecraft.getInstance();
+        dispatcher.register(
+                Commands.literal("eye")
+                        .requires(src -> src.hasPermission(0))
+                        .then(Commands.literal("toggle")
+                                .then(Commands.argument("target", EntityArgument.players())
+                                        .then(Commands.argument("state", BoolArgumentType.bool())
+                                                .executes(ctx -> {
+                                                    Collection<ServerPlayer> targets = EntityArgument.getPlayers(ctx, "target");
+                                                    boolean state = BoolArgumentType.getBool(ctx, "state");
 
-            GlowingEyesClient.getClientScheduler().runLater(() -> {
-                mc.setScreen(new EyesEditorScreen());
-            }, 1L);
+                                                    List<ServerPlayer> players = ctx.getSource().getServer().getPlayerList()
+                                                            .getPlayers()
+                                                            .stream()
+                                                            .toList();
+                                                    for (ServerPlayer player : targets) {
+                                                        GlowingEyesCapability.setToggledOn(player, state);
+                                                        for (ServerPlayer getpla : players) {
+                                                            GlowingEyesCapability.sendUpdate(player, getpla);
+                                                        }
+                                                    }
+                                                    return targets.size();
+                                                })
+                                        )
+                                )
+                        )
+                        .then(Commands.literal("eye")
+                                .then(Commands.argument("target", EntityArgument.players())
+                                        .then(Commands.argument("r", IntegerArgumentType.integer(0, 255))
+                                                .then(Commands.argument("g", IntegerArgumentType.integer(0, 255))
+                                                        .then(Commands.argument("b", IntegerArgumentType.integer(0, 255))
+                                                                .executes(ctx -> {
+                                                                    Collection<ServerPlayer> targets = EntityArgument.getPlayers(ctx, "target");
+                                                                    int r = IntegerArgumentType.getInteger(ctx, "r");
+                                                                    int g = IntegerArgumentType.getInteger(ctx, "g");
+                                                                    int b = IntegerArgumentType.getInteger(ctx, "b");
+                                                                    Color newColor = new Color(r, g, b);
 
-            return 1;
-        });
+                                                                    List<ServerPlayer> players = ctx.getSource().getServer().getPlayerList()
+                                                                            .getPlayers()
+                                                                            .stream()
+                                                                            .toList();
 
-        dispatcher.register(eyes);
+                                                                    for(ServerPlayer getplayer : targets) {
+                                                                        HashMap<Point, Color> oldGlowingMap = GlowingEyesCapability.getGlowingEyesMap(getplayer);
+                                                                        HashMap<Point, Color> newGlowingMap = new HashMap<>();
+
+                                                                        oldGlowingMap.forEach((point, color) -> {
+                                                                            newGlowingMap.put(point, newColor);
+                                                                        });
+                                                                        GlowingEyesCapability.setGlowingEyesMap(getplayer, newGlowingMap);
+                                                                        for (ServerPlayer getpla : players) {
+                                                                            GlowingEyesCapability.sendUpdate(getplayer, getpla);
+                                                                        }
+                                                                        GlowingEyesCapability.sendUpdate();
+                                                                    }
+                                                                    return targets.size();
+                                                                })
+                                                        )
+                                                )
+                                        )
+                                )
+                        )
+        );
     }
 }

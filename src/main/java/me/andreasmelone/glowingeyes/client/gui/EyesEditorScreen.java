@@ -1,7 +1,6 @@
 package me.andreasmelone.glowingeyes.client.gui;
 
 import com.mojang.logging.LogUtils;
-import me.andreasmelone.glowingeyes.client.gui.preset.PresetsScreen;
 import me.andreasmelone.glowingeyes.client.util.ColorUtil;
 import me.andreasmelone.glowingeyes.client.util.GuiUtil;
 import me.andreasmelone.glowingeyes.client.util.TextureLocations;
@@ -50,27 +49,6 @@ public class EyesEditorScreen extends Screen {
             LogUtils.getLogger().error("Could not load glowing eyes map from player capability");
         }
 
-        // the color picker button
-        this.addRenderableWidget(new ImageButton(
-                this.guiLeft + this.xSize - 30, this.guiTop + this.ySize - 30,
-                20, 20,
-                0, 0, 20,
-                TextureLocations.COLOR_PICKER_BUTTON,
-                64, 64,
-                button -> Minecraft.getInstance().setScreen(new ColorPickerScreen(this))
-        ));
-
-        // the preset menu button
-        this.addRenderableWidget(new ImageButton(
-                this.guiLeft + this.xSize - 30, this.guiTop + this.ySize - 55,
-                20, 20,
-                0, 0, 20,
-                TextureLocations.PRESET_MENU_BUTTON,
-                64, 64,
-                button -> {
-                    Minecraft.getInstance().setScreen(new PresetsScreen(this));
-                }
-        ));
 
         modeButtons.clear();
         modeButtons.add(new ImageButton(
@@ -201,7 +179,8 @@ public class EyesEditorScreen extends Screen {
 
             if (mode == Mode.BRUSH) {
                 if (button == 0) {
-                    pixels.put(new Point(x, y), ColorPickerScreen.getSelectedColor());
+                    Color basicColor = GlowingEyesCapability.takeEyeColor(Minecraft.getInstance().player);
+                    pixels.put(new Point(x, y), basicColor); // TODO
                 } else if (button == 1) {
                     pixels.remove(new Point(x, y));
                 }
@@ -229,7 +208,7 @@ public class EyesEditorScreen extends Screen {
 
                 Color color = new Color(pixel[0], pixel[1], pixel[2], pixel[3]);
                 System.out.println("Color: " + ColorUtil.intToHex(color.getRGB()));
-                ColorPickerScreen.setSelectedColor(color);
+                //ColorPickerScreen.setSelectedColor(color);
 
                 modeButtons.get(0).onPress();
             }

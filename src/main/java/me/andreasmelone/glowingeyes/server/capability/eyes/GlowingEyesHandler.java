@@ -16,6 +16,8 @@ import net.minecraftforge.eventbus.api.SubscribeEvent;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
+import java.awt.*;
+
 public class GlowingEyesHandler implements INBTSerializable<CompoundTag>, ICapabilityProvider {
     public static final ResourceLocation IDENTIFIER = new ResourceLocation(GlowingEyes.MOD_ID, "glowingeyes");
 
@@ -27,6 +29,10 @@ public class GlowingEyesHandler implements INBTSerializable<CompoundTag>, ICapab
         CompoundTag tag = new CompoundTag();
         tag.putBoolean("toggledOn", glowingeyes.isToggledOn());
         tag.putByteArray("glowingEyesMap", Util.serializeMap(glowingeyes.getGlowingEyesMap()));
+        Color color = glowingeyes.getBasicColor();
+        tag.putInt("basicColorR", color.getRed());
+        tag.putInt("basicColorG", color.getGreen());
+        tag.putInt("basicColorB", color.getBlue());
         return tag;
     }
 
@@ -34,6 +40,10 @@ public class GlowingEyesHandler implements INBTSerializable<CompoundTag>, ICapab
     public void deserializeNBT(CompoundTag compoundTag) {
         glowingeyes.setToggledOn(compoundTag.getBoolean("toggledOn"));
         glowingeyes.setGlowingEyesMap(Util.deserializeMap(compoundTag.getByteArray("glowingEyesMap")));
+        int r = compoundTag.getInt("basicColorR");
+        int g = compoundTag.getInt("basicColorG");
+        int b = compoundTag.getInt("basicColorB");
+        glowingeyes.setBasicColor(new Color(r, g, b));
     }
 
     @Override

@@ -3,7 +3,6 @@ package me.andreasmelone.glowingeyes.server.capability.eyes;
 import me.andreasmelone.glowingeyes.server.packets.CapabilityUpdatePacket;
 import me.andreasmelone.glowingeyes.server.packets.PacketManager;
 import net.minecraft.client.Minecraft;
-import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.entity.player.Player;
 import net.minecraftforge.api.distmarker.Dist;
@@ -17,6 +16,7 @@ import org.jetbrains.annotations.NotNull;
 
 import java.awt.*;
 import java.util.HashMap;
+import java.util.concurrent.atomic.AtomicReference;
 
 public class GlowingEyesCapability {
     private GlowingEyesCapability() {
@@ -51,6 +51,10 @@ public class GlowingEyesCapability {
         return getCapability(player).getGlowingEyesMap();
     }
 
+    public static Color getBasicColor(Player player) {
+        return getCapability(player).getBasicColor();
+    }
+
     /**
      * Sets the glowing eyes map (should only be using when completely overwriting the map)
      * Otherwise, get the glowing eyes map and modify it
@@ -59,6 +63,9 @@ public class GlowingEyesCapability {
      */
     public static void setGlowingEyesMap(Player player, @NotNull HashMap<Point, Color> glowingEyesMap) {
         getCapability(player).setGlowingEyesMap(glowingEyesMap);
+    }
+    public static void setBasicColor(Player player, Color color) {
+        getCapability(player).setBasicColor(color);
     }
 
     /**
@@ -77,6 +84,16 @@ public class GlowingEyesCapability {
      */
     public static void setToggledOn(Player player, boolean toggledOn) {
         getCapability(player).setToggledOn(toggledOn);
+    }
+
+    public static Color takeEyeColor(Player player) {
+        AtomicReference<Color> basicColor = new AtomicReference<>(getCapability(player).getBasicColor());
+        HashMap<Point, Color> glowingmap = getCapability(player).getGlowingEyesMap();
+        glowingmap.forEach((point,color) -> {
+            basicColor.set(color);
+            getCapability(player).setBasicColor(color);
+        });
+        return basicColor.get();
     }
 
     /**
